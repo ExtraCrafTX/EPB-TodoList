@@ -13,7 +13,7 @@ $(function(){
         span.text(item);
         li.append(span);
         
-        let button = $("<button>Delete</button>");
+        let button = $("<button class='delete'>Delete</button>");
         button.click(event => {
             // console.log("deleting");
             console.log(event.target);
