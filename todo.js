@@ -1,3 +1,4 @@
+let counter = 0;
 $(function(){
     $("#add").submit(event => {
         event.preventDefault();
@@ -6,20 +7,21 @@ $(function(){
         let form = $(event.target);
         let item = $("#adding").val();
         console.log(item);
-        let li = $("<li class='row'></li>");
-        let col1 = $("<div class='col'></div>");
+        let li = $("<li class='form-row form-inline justify-content-between mt-2'></li>");
+        let col1 = $("<div class='custom-control custom-checkbox'></div>");
         li.append(col1);
 
-        col1.append("<input type='checkbox' class='mr-2 mr-lg-3' />");
+        col1.append("<input type='checkbox' class='custom-control-input' id='" + counter + "' />");
         
-        let span = $("<span></span>");
-        span.text(item);
-        col1.append(span);
+        let label = $("<label class='custom-control-label ml-1'></label>");
+        label.attr("for", counter);
+        label.text(item);
+        col1.append(label);
 
         let col2 = $("<div class='col-2'></div>");
         li.append(col2);
         
-        let button = $("<button class='delete w-100'>Delete</button>");
+        let button = $("<button class='btn btn-danger w-100'>Delete</button>");
         button.click(event => {
             // console.log("deleting");
             console.log(event.target);
@@ -29,5 +31,6 @@ $(function(){
         
         $("#list").append(li);
         $("#adding").val("");
+        counter ++;
     });
 });
