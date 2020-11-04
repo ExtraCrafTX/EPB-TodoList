@@ -76,5 +76,34 @@
             </div>
         </div>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
+
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyCwM2Sq7sIVU3ejZy9FgfAJVl3J7RsFV7A",
+        authDomain: "todolist-afe97.firebaseapp.com",
+        databaseURL: "https://todolist-afe97.firebaseio.com",
+        projectId: "todolist-afe97",
+        storageBucket: "todolist-afe97.appspot.com",
+        messagingSenderId: "963066725171",
+        appId: "1:963066725171:web:bf5ea0d36e2df05fcdf446"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    var database = firebase.database();
+    // database.ref("/test").set({
+    //     title: "Todo List",
+    //     text: "Hello world!"
+    // });
+    // database.ref("/testing").once('value').then(function(snapshot){
+    //     let value = snapshot.val();
+    //     console.log(value.title);
+    // });
+    </script>
 </body>
 </html>
