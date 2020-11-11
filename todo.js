@@ -59,44 +59,73 @@ $(function(){
         let email = $("#signup-email").val();
         let pwd = $("#signup-pwd").val();
         let confirm = $("#signup-pwd-confirm").val();
+        let remember = $("#signup-remember")[0].checked;
+        let persistence = remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
+        $("#signup-error").empty();
+        $("#signup-email").removeClass("is-invalid");
         if (pwd !== confirm) {
             alert("Your password and confirmation don't match!");
             return;
         }
-        auth.createUserWithEmailAndPassword(email, pwd).then(function(result){
-            console.log(result);
-            $("#modal").modal('hide');
-        }).catch(function(error){
-            alert(error.message);
+        auth.setPersistence(persistence).then(result=>{
+            auth.createUserWithEmailAndPassword(email, pwd).then(function(result){
+                console.log(result);
+                $("#modal").modal('hide');
+                $("#signup-form").trigger("reset");
+            }).catch(function(error){
+                // alert(error.message);
+                console.log(error);
+                if (error.code.includes("email")) {
+                    $("#signup-email").addClass("is-invalid");
+                }
+                // switch(error.code){
+                //     case "auth/invalid-email":
+                //         $("#signup-email").addClass("is-invalid");
+                //         break;
+                // }
+                $("#signup-error").text(error.message);
+            });
         });
     });
 
     $("#confirm-login").click(event => {
         let email = $("#email").val();
         let password = $("#pwd").val();
-        auth.signInWithEmailAndPassword(email, password).then(function(result){
-            console.log(result);
-            $("#modal-login").modal('hide');
-        }).catch(function(error){
-            alert(error.message);
+        let remember = $("#login-remember")[0].checked;
+        let persistence = remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION;
+        $("#login-error").empty();
+        auth.setPersistence(persistence).then(result=>{
+            auth.signInWithEmailAndPassword(email, password).then(function(result){
+                console.log(result);
+                $("#modal-login").modal('hide');
+                $("#login-form").trigger("reset");
+            }).catch(function(error){
+                // alert(error.message);
+                console.log(error);
+                $("#login-error").text(error.message);
+            });
         });
     });
 
     $("#google").click(event => {
+        $("#login-error").empty();
         auth.signInWithPopup(google).then(function(result){
             console.log(result);
             $("#modal-login").modal('hide');
+            $("#login-form").trigger("reset");
         }).catch(function(error){
-            alert(error.message);
+            handlePopupError(error);
         });
     });
 
     $("#github").click(event => {
+        $("#login-error").empty();
         auth.signInWithPopup(github).then(function(result){
             console.log(result);
             $("#modal-login").modal('hide');
+            $("#login-form").trigger("reset");
         }).catch(function(error){
-            alert(error.message);
+            handlePopupError(error);
         });
     });
 
@@ -135,10 +164,12 @@ $(function(){
             $("#login-message").show();
             $("#list").hide().empty();
             $("#add").hide();
-            let ref = database.ref("/todo/"+currentUser.uid);
-            ref.off('child_added');
-            ref.off('child_removed');
-            ref.off('child_changed');
+            if (currentUser) {
+                let ref = database.ref("/todo/"+currentUser.uid);
+                ref.off('child_added');
+                ref.off('child_removed');
+                ref.off('child_changed');
+            }
         }
         currentUser = user;
     });
@@ -167,10 +198,10 @@ function createTodo(item, checked, ref){
     label.text(item);
     col1.append(label);
 
-    let col2 = $("<div class='col-2'></div>");
+    let col2 = $("<div class='col-auto'></div>");
     li.append(col2);
 
-    let button = $("<button class='btn btn-danger w-100'>Delete</button>");
+    let button = $("<button class='btn btn-danger'>Delete</button>");
     button.click(event => {
         // console.log("deleting");
         console.log(event.target);
@@ -180,4 +211,17 @@ function createTodo(item, checked, ref){
     col2.append(button);
 
     $("#list").append(li);
+}
+
+function handlePopupError(error){
+    // alert(error.message);
+    console.log(error);
+    switch(error.code){
+        case "auth/popup-blocked":
+        case "auth/popup-closed-by-user":
+            break;
+        case "auth/account-exists-with-different-credential":
+            $("#login-error").text("Please sign in to link accounts.");
+            break;
+    }
 }
