@@ -1,3 +1,7 @@
+body {
+    background-color: aliceblue;
+}
+
 ul :checked + label{
     text-decoration: line-through;
 }
