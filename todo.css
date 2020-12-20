@@ -5,3 +5,9 @@ body {
 ul :checked + label{
     text-decoration: line-through;
 }
+
+img{
+    height: 2.2em;
+    margin-right: 1em;
+    border-radius: 0.5em;
+}

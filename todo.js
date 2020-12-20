@@ -36,6 +36,38 @@ $(function(){
     //     $("#" + snapshot.key).attr("checked", checked);
     // });
 
+    $("#customFile").change(event => {
+        let name = event.target.files[0].name;
+        console.log(name);
+        $("#customFileName").text(name);
+    });
+
+    $("#file").submit(event => {
+        event.preventDefault();
+        if(!currentUser){
+            alert("Please sign in first");
+        }else{
+            let file = $("#customFile")[0].files[0];
+            let userFolder = storage.ref(currentUser.uid);
+            let ref = userFolder.child(file.name);
+            ref.put(file).then(result => {
+                ref.getDownloadURL().then(url => {
+                    console.log(url);
+                    auth.currentUser.updateProfile({
+                        photoURL: url
+                    });
+                    $("#dynamic-image").attr("src", url);
+                });
+            });
+            // let upload = ref.put(file);
+            // upload.on(firebase.storage.TaskEvent.STATE_CHANGED, ()=>{}, ()=>{}, () => {
+            //     ref.getDownloadURL().then(url => {
+            //         console.log(url);
+            //     });
+            // });
+        }
+    });
+
     // Handle add button
     $("#add").submit(event => {
         event.preventDefault();
@@ -157,8 +189,19 @@ $(function(){
                 let checked = snapshot.val().done;
                 $("#" + snapshot.key).attr("checked", checked);
             });
+
+            if(user.photoURL){
+                console.log("Has profile picture");
+                $("#dynamic-image").attr("src", user.photoURL);
+            }else{
+                console.log("No profile picture");
+                storage.ref("cat.png").getDownloadURL().then(url => {
+                    $("#dynamic-image").attr("src", url);
+                });
+            }
         } else {
             console.log("No one is signed in!");
+            $("#dynamic-image").attr("src", "");
             $("#signout-form").hide();
             $("#signin-form").show();
             $("#login-message").show();
